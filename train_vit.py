@@ -51,4 +51,6 @@ if __name__ == '__main__':
     trainer.fit(
         train_set,
         test_set,
+        'vit.log',
+        'vit_latest.pth'
     )

@@ -7,7 +7,6 @@ from seed import set_seed
 set_seed()
 
 
-
 class NNFactory:
     def createModel(self):
         raise NotImplementedError()
@@ -56,6 +55,10 @@ class Wrapper:
         self.net.eval()
 
 
+    def state_dict(self):
+        return self.net.state_dict()
+
+
 
 class ViTWrapper(Wrapper):
     def __init__(self):
@@ -82,7 +85,10 @@ class ViTWrapper(Wrapper):
 
 
     def forward(self, x):
-        print('called')
+        '''
+            Do a forward call
+        '''
+
         return self.net.forward(self.pad_board(x))
 
 

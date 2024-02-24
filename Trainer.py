@@ -28,15 +28,16 @@ class Trainer:
         self.file_path = file_path
 
 
-    def fit(self, train_set, test_set):
+    def fit(self, train_set, test_set, log_file, lastest_path):
         '''
             Fits the model on `train_set` and saves the best performing model on `test_set`
 
             Args:
-                
-                train_set (DataLoader)
-
-                test_set (DataLoader)
+                train_set (DataLoader): training set
+                test_set (DataLoader): testing set
+                log_file (str): the accuracy will be written in this file after each epoch
+                lastest_path (str): the lastest version of model and optimizer
+            
         '''
         best_acc = 0
         
@@ -64,11 +65,24 @@ class Trainer:
                 torch.save(self.net, self.file_path)
                 print(f'model saved, acc = {best_acc:.4f}')
 
+
             
             top_1_train_accs.append(top_1_train)
             top_5_train_accs.append(top_5_train)
             top_1_test_accs.append(top_1_test)
             top_5_test_accs.append(top_5_test)
+
+
+
+            # save the lastest model and the training accuracy just in case there's a power outage
+            with open(log_file, 'a') as f:
+                f.write(f'{top_1_train},{top_5_train},{top_1_test},{top_5_test}\n')
+
+            torch.save({
+                'model_state_dict': self.net.state_dict(),
+                'optimizer_state_dict': self.optim.state_dict(),
+            }, lastest_path)
+
 
 
         self.plot(top_1_train_accs, top_5_train_accs, top_1_test_accs, top_5_test_accs)
@@ -102,7 +116,6 @@ class Trainer:
         '''
             Args:
                 train_set (DataLoader): training set
-                log_interval (float): the accuracy will be logged at progress bar for every `len(train_set) * log_interval` iterations
 
             Returns: 
                 top 1 accuracy (float) and top 5 accuracy (float)
@@ -148,6 +161,13 @@ class Trainer:
     
 
     def test(self, test_set):
+        '''
+            Args:
+                test_set (DataLoader): testing set
+
+            Returns: 
+                top 1 accuracy (float) and top 5 accuracy (float)
+        '''
         self.net.eval()
         correct_preds = 0
         total_preds = 0
@@ -185,7 +205,7 @@ class Trainer:
         _, topk_indices = preds.topk(k, dim=-1) # output (batch, k)
 
         # Check if the true label_index is in the top-k predicted labels for each example
-        batch_size, pred_size = preds.shape
+        batch_size, _ = preds.shape
 
         correct = 0
 

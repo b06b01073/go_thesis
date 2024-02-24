@@ -7,6 +7,10 @@ set_seed()
 
 
 class GameUnroller:
+    '''
+        A class that plays the Go using `unroll(game)` given the `game`.
+    '''
+
     def __init__(self):
         self.go_env = Go()
 
