@@ -1,6 +1,7 @@
 import numpy as np
 import gogame
 import govars
+import goutils
 
 from seed import set_seed
 set_seed()
@@ -29,7 +30,7 @@ class Go:
     def build_recent_moves(self, action1d):
         last_move = np.zeros((govars.SIZE, govars.SIZE))
         if action1d != govars.PASS:
-            action2d = action1d // govars.SIZE, action1d % govars.SIZE
+            action2d = goutils.action1d_to_action2d(action1d)
             last_move[action2d] = 1
         self.recent_moves[:-1] = self.recent_moves[1:] 
         self.recent_moves[-1] = last_move

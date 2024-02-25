@@ -1,6 +1,6 @@
 from GoEnv import Go
 import goutils
-
+import govars
 
 from seed import set_seed
 set_seed()
@@ -35,8 +35,11 @@ class GameUnroller:
             action1d = goutils.move_encode(move) # move is the COLOR[column row], where COLOR is 'B' or 'W'
             game_features = self.go_env.game_features() # get the features for the current board, this will be the input
 
-            game_states.append(game_features)
-            game_moves.append(action1d)
+            
+            # keep only the non-pass transitioins 
+            if action1d != govars.PASS:
+                game_states.append(game_features)
+                game_moves.append(action1d)
 
 
             self.go_env.make_move(action1d)

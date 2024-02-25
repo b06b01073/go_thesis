@@ -27,7 +27,11 @@ def move_encode(move):
     return move_1d
 
 
-def move_decode(action1d):
+def action1d_to_action2d(action1d):
+    '''
+        convert action in 1d(0 - 361) to 2d coordinate
+        Args:
+    '''
     return action1d // govars.SIZE, action1d % govars.SIZE
 
 

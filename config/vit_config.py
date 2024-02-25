@@ -8,7 +8,7 @@ net_config = {
     'encoder_layer': 12,
     'num_head': 8, 
     'dropout': 0.05,
-    'num_class': 362, # number of moves(19 * 19) + pass (1) = 362
+    'num_class': 361, # number of moves(19 * 19)
 }
 
 
