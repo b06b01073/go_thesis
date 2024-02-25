@@ -16,3 +16,8 @@ class OptimFactory:
 class AdamFactory(OptimFactory):
     def create_optim(self, net, optim_config):
         return optim.Adam(net.parameters(), lr=optim_config['lr'], weight_decay=optim_config['weight_decay'])
+    
+
+class SGDFactory(OptimFactory):
+    def create_optim(self, net, optim_config):
+        return optim.SGD(net.parameters(), lr=optim_config['lr'])

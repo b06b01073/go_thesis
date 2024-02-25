@@ -110,7 +110,7 @@ class ViTWrapper(Wrapper):
 
 
 class Nature2016Net(nn.Module):
-    def __init__(self, hidden_layers=11, hidden_dim=64):
+    def __init__(self, hidden_layers=6, hidden_dim=64):
         super().__init__()
         self.input_layer = nn.Sequential(
             nn.Conv2d(in_channels=govars.FEAT_CHNLS, out_channels=hidden_dim, kernel_size=5, stride=1, padding=2),
@@ -130,7 +130,6 @@ class Nature2016Net(nn.Module):
         self.output_layer = nn.Sequential(
             PositionalBiasConv2d(in_channels=hidden_dim, out_channels=1, kernel_size=1, stride=1),
             nn.Flatten(), # (B, 19 * 19)
-            nn.Softmax() # AlphaGo updates parameters based on log likelihood
         )
 
 
@@ -172,7 +171,7 @@ class PositionalBiasConv2d(nn.Module):
         )
 
         
-        self.bias = nn.Parameter(torch.rand(1, govars.SIZE, govars.SIZE) - 0.5) # initialized in the range [-0.5, 0.5)
+        self.bias = nn.Parameter((torch.rand(1, govars.SIZE, govars.SIZE) - 0.5) * 0.1) # initialized in the range [-0.5, 0.5)
 
 
     def forward(self, x):
