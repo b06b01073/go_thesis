@@ -1,13 +1,15 @@
 from argparse import ArgumentParser
 import torch.nn as nn
 
-
 from NNFactory import ViTFactory
 from OptimFactory import AdamFactory
 from Trainer import Trainer
-from config.vit_config import optim_config
+from config.vit_config import *
+from config.training_config import *
+
 import GoDataset
 from seed import set_seed
+import log_tools
 
 
 import os
@@ -18,10 +20,16 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
     # parser.add_argument('--config_path', type=str, default='./hyperparams.json', help='path to the hyperparams file')
-    parser.add_argument('--save_path', type=str, default='./trained_model')
-    parser.add_argument('--file_name', type=str, default='vit.pth', help='name of the saved model')
     parser.add_argument('--train', type=str, default='./dataset/train.txt', help='path to the train set')
     parser.add_argument('--test', type=str, default='./dataset/test.txt', help='path to the test set')
+
+    parser.add_argument('--save_path', type=str, default='./trained_model')
+
+
+    # we want the users to explicitly type out the path
+    parser.add_argument('--file_name', type=str, required=True, help='name of the saved model (best performing model)')
+    parser.add_argument('--log_path', type=str, required=True, help='file name of the log (accuracy during training)')
+    parser.add_argument('--latest_path', type=str, required=True, help='file name of the latest iteration of the model')
 
     args = parser.parse_args()
     
@@ -29,11 +37,43 @@ if __name__ == '__main__':
     # crreate the folder to save the model if the path does not exist
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path)
+
+
+
+    # give a warning if the file already exists, we do not exit() here, since the user have atleast 1 hour to terminate the process before the file content is overwritten.
+    if os.path.exists(args.log_path):
+        log_tools.print_warning(f'Warning: {args.log_path} already exists!')
+
+
+    if os.path.exists(args.latest_path):
+        log_tools.print_warning(f'Warning: {args.latest_path} already exists!')
+
+    
+    if os.path.exists(os.path.join(args.save_path, args.file_name)):
+        log_tools.print_warning(f'Warning: {os.path.join(args.save_path, args.file_name)} already exists!')
     
 
+
+        
+    # print the training settings, make sure you check the message in the terminal before you go afk
+    log_tools.print_normal(args)
+    log_tools.print_normal(optim_config)
+    log_tools.print_normal(net_config)
+    log_tools.print_normal(training_config)
+
+    checker = input('DID YOU READ IT? [Y|N]')
+    if not checker == 'Y' and not checker == 'y':
+        log_tools.print_warning('READ IT')
+        exit()
+    
+
+
+    # the training process starts here
     net = ViTFactory().createModel()
     optim = AdamFactory().create_optim(net, optim_config)
     loss_func = nn.CrossEntropyLoss()
+
+
 
 
     trainer = Trainer(
@@ -51,6 +91,6 @@ if __name__ == '__main__':
     trainer.fit(
         train_set,
         test_set,
-        'vit.log',
-        'vit_latest.pth'
+        args.log_path,
+        args.latest_path
     )

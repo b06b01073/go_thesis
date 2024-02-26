@@ -68,7 +68,10 @@ class Wrapper:
 
     def state_dict(self):
         return self.net.state_dict()
+    
 
+    def __str__(self):
+        return self.net.__str__()
 
 
 class ViTWrapper(Wrapper):
