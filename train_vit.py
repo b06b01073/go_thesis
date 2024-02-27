@@ -6,10 +6,10 @@ from OptimFactory import AdamFactory
 from Trainer import Trainer
 from config.vit_config import *
 from config.training_config import *
-
 import GoDataset
 from seed import set_seed
 import log_tools
+from TrainingChock import unblock
 
 
 import os
@@ -53,21 +53,14 @@ if __name__ == '__main__':
         log_tools.print_warning(f'Warning: {os.path.join(args.save_path, args.file_name)} already exists!')
     
 
+    unblock(
+        args, 
+        optim_config, 
+        net_config, 
+        training_config
+    )
 
         
-    # print the training settings, make sure you check the message in the terminal before you go afk
-    log_tools.print_normal(args)
-    log_tools.print_normal(optim_config)
-    log_tools.print_normal(net_config)
-    log_tools.print_normal(training_config)
-
-    checker = input('DID YOU READ IT? [Y|N]')
-    if not checker == 'Y' and not checker == 'y':
-        log_tools.print_warning('READ IT')
-        exit()
-    
-
-
     # the training process starts here
     net = ViTFactory().createModel()
     optim = AdamFactory().create_optim(net, optim_config)
