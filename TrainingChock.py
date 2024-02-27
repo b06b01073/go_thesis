@@ -1,5 +1,6 @@
 import log_tools
 import emoji
+import os
 
 def unblock(args, optim_config, net_config, training_config):
     '''
@@ -11,8 +12,23 @@ def unblock(args, optim_config, net_config, training_config):
     log_tools.print_normal(training_config)
 
     checker = input('DID YOU READ IT? [Y|N]')
-    if not checker == 'Y' and not checker == 'y':
-        print(emoji.emojize('Houston, we\'ve got a problem :police_car_light::police_car_light::police_car_light:', language='alias'))
-        exit()
+    if checker == 'Y' or checker == 'y':
+        log_tools.print_normal(emoji.emojize('We\'re ready to take off :rocket::rocket::rocket:, good luck', language='alias'))
     else:
-        print(emoji.emojize('We\'re ready to take off :rocket::rocket::rocket:, good luck', language='alias'))
+        log_tools.print_warning(emoji.emojize('Houston, we have a problem :police_car_light::police_car_light::police_car_light:', language='alias'))
+
+
+def path_checker(path):
+    '''
+        Give a warning if the file already exists.
+    '''
+    if os.path.exists(path):
+        log_tools.print_warning(f'Warning: {path} already exists!')
+        checker = input('Are you sure you want to continue? [Y|N]')
+        if checker == 'Y' or checker == 'y':
+            log_tools.print_normal('Sure, as you wish')
+        else:
+            log_tools.print_warning('Oops')
+            exit()
+    else:
+        log_tools.print_normal(f'OK: {path} is available.')

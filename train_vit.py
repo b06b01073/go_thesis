@@ -9,7 +9,7 @@ from config.training_config import *
 import GoDataset
 from seed import set_seed
 import log_tools
-from TrainingChock import unblock
+from TrainingChock import unblock, path_checker
 
 
 import os
@@ -40,18 +40,10 @@ if __name__ == '__main__':
 
 
 
-    # give a warning if the file already exists, we do not exit() here, since the user have atleast 1 hour to terminate the process before the file content is overwritten.
-    if os.path.exists(args.log_path):
-        log_tools.print_warning(f'Warning: {args.log_path} already exists!')
+    path_checker(args.log_path)
+    path_checker(args.latest_path)
+    path_checker(os.path.join(args.save_path, args.file_name))
 
-
-    if os.path.exists(args.latest_path):
-        log_tools.print_warning(f'Warning: {args.latest_path} already exists!')
-
-    
-    if os.path.exists(os.path.join(args.save_path, args.file_name)):
-        log_tools.print_warning(f'Warning: {os.path.join(args.save_path, args.file_name)} already exists!')
-    
 
     unblock(
         args, 
