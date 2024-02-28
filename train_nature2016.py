@@ -5,9 +5,11 @@ import torch.nn as nn
 from NNFactory import Nature2016Factory
 from OptimFactory import SGDFactory
 from Trainer import Trainer
-from config.nature2016_config import optim_config
+from config.nature2016_config import *
+from config.training_config import *
 import GoDataset
 from seed import set_seed
+from TrainingChock import unblock, path_checker
 
 
 import os
@@ -19,9 +21,13 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     # parser.add_argument('--config_path', type=str, default='./hyperparams.json', help='path to the hyperparams file')
     parser.add_argument('--save_path', type=str, default='./trained_model')
-    parser.add_argument('--file_name', type=str, default='Nature2016.pth', help='name of the saved model')
     parser.add_argument('--train', type=str, default='./dataset/train.txt', help='path to the train set')
     parser.add_argument('--test', type=str, default='./dataset/test.txt', help='path to the test set')
+
+    # we want the users to explicitly type out the path
+    parser.add_argument('--file_name', type=str, required=True, help='name of the saved model (best performing model)')
+    parser.add_argument('--log_path', type=str, required=True, help='file name of the log (accuracy during training)')
+    parser.add_argument('--latest_path', type=str, required=True, help='file name of the latest iteration of the model')
 
     args = parser.parse_args()
     
@@ -30,6 +36,19 @@ if __name__ == '__main__':
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path)
     
+
+    path_checker(args.log_path)
+    path_checker(args.latest_path)
+    path_checker(os.path.join(args.save_path, args.file_name))
+
+
+    unblock(
+        args, 
+        optim_config, 
+        net_config, 
+        training_config
+    )
+
 
     net = Nature2016Factory().createModel()
     optim = SGDFactory().create_optim(net, optim_config)
@@ -51,6 +70,6 @@ if __name__ == '__main__':
     trainer.fit(
         train_set,
         test_set,
-        'nature2016.log',
-        'nature2016_latest.pth'
+        args.log_path,
+        args.latest_path
     )

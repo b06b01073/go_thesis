@@ -23,6 +23,8 @@ class Trainer:
         print(f'Training on {self.device}')
 
         self.net = net.to(self.device)
+        print(f'Total number of parameters: {sum(p.numel() for p in self.net.parameters())}')
+
         self.optim = optim
         self.loss_func = loss_func
         self.file_path = file_path
@@ -88,7 +90,7 @@ class Trainer:
         self.plot(top_1_train_accs, top_5_train_accs, top_1_test_accs, top_5_test_accs)
 
 
-        
+    # you can alternatively use the data stored in the log file to plot the result
     def plot(self, top_1_train_accs, top_5_train_accs, top_1_test_accs, top_5_test_accs):
         plt.xlabel('Epochs')
         plt.ylabel('Accuracy')

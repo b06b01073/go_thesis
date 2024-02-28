@@ -1,4 +1,5 @@
-from config.vit_config import net_config
+from config.vit_config import net_config as vit_nc
+from config.nature2016_config import net_config as nature_nc
 from torchvision.models.vision_transformer import VisionTransformer as ViT
 import govars
 import torch.nn.functional as F
@@ -79,16 +80,23 @@ class ViTWrapper(Wrapper):
         THe ViT requires a wrapper since ViT is an api provided by Pytorch, we have no control of how the data is processed. Therefore, an wrapper is required to perform data preprocessing
     '''
     def __init__(self):
+        '''
+            Initialize the ViT model. Here, we list the number of params corresponding to the specified encoder layers
+
+            12 layers: 43224169
+            8 layers: 29037673
+            4 layers: 14851177
+        '''
         self.net = ViT(
             image_size=govars.PADDED_SIZE,
-            patch_size=net_config['patch_size'],
-            num_classes=net_config['num_class'],
-            num_heads=net_config['num_head'],
-            num_layers=net_config['encoder_layer'],
-            hidden_dim=net_config['embedded_dim'],
-            mlp_dim=net_config['embedded_dim'],
+            patch_size=vit_nc['patch_size'],
+            num_classes=vit_nc['num_class'],
+            num_heads=vit_nc['num_head'],
+            num_layers=vit_nc['encoder_layer'],
+            hidden_dim=vit_nc['embedded_dim'],
+            mlp_dim=vit_nc['embedded_dim'],
             in_channels=govars.FEAT_CHNLS,
-            dropout=net_config['dropout']
+            dropout=vit_nc['dropout']
         )
 
 
@@ -113,25 +121,25 @@ class ViTWrapper(Wrapper):
 
 
 class Nature2016Net(nn.Module):
-    def __init__(self, hidden_layers=6, hidden_dim=64):
+    def __init__(self):
         super().__init__()
         self.input_layer = nn.Sequential(
-            nn.Conv2d(in_channels=govars.FEAT_CHNLS, out_channels=hidden_dim, kernel_size=5, stride=1, padding=2),
+            nn.Conv2d(in_channels=govars.FEAT_CHNLS, out_channels=nature_nc['filters'], kernel_size=5, stride=1, padding=2),
             nn.ReLU(),
         )
 
 
         # create the hidden layers with `hiden_layers` layers
         self.hidden_layers = nn.ModuleList([])
-        for _ in range(hidden_layers):
+        for _ in range(nature_nc['num_layers']):
             self.hidden_layers.extend([
-                nn.Conv2d(in_channels=hidden_dim, out_channels=hidden_dim, kernel_size=3, stride=1, padding=1), 
+                nn.Conv2d(in_channels=nature_nc['filters'], out_channels=nature_nc['filters'], kernel_size=3, stride=1, padding=1), 
                 nn.ReLU()
             ])
             
 
         self.output_layer = nn.Sequential(
-            PositionalBiasConv2d(in_channels=hidden_dim, out_channels=1, kernel_size=1, stride=1),
+            PositionalBiasConv2d(in_channels=nature_nc['filters'], out_channels=1, kernel_size=1, stride=1),
             nn.Flatten(), # (B, 19 * 19)
         )
 
@@ -174,7 +182,7 @@ class PositionalBiasConv2d(nn.Module):
         )
 
         
-        self.bias = nn.Parameter((torch.rand(1, govars.SIZE, govars.SIZE) - 0.5) * 0.1) # initialized in the range [-0.5, 0.5)
+        self.bias = nn.Parameter((torch.rand(1, govars.SIZE, govars.SIZE) - 0.5) * 0.1) # initialized in the range [-0.05, 0.05)
 
 
     def forward(self, x):

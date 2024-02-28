@@ -16,6 +16,7 @@ def unblock(args, optim_config, net_config, training_config):
         log_tools.print_normal(emoji.emojize('We\'re ready to take off :rocket::rocket::rocket:, good luck', language='alias'))
     else:
         log_tools.print_warning(emoji.emojize('Houston, we have a problem :police_car_light::police_car_light::police_car_light:', language='alias'))
+        exit()
 
 
 def path_checker(path):
