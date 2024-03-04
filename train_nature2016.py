@@ -9,7 +9,7 @@ from config.nature2016_config import *
 from config.training_config import *
 import GoDataset
 from seed import set_seed
-from TrainingChock import unblock, path_checker
+from TrainingChock import settings_checker, path_checker
 
 
 import os
@@ -37,15 +37,18 @@ if __name__ == '__main__':
         os.makedirs(args.save_path)
     
 
-    path_checker(args.log_path)
-    path_checker(args.latest_path)
-    path_checker(os.path.join(args.save_path, args.file_name))
+    path_checker(
+        args.log_path,
+        args.latest_path,
+        os.path.join(args.save_path, args.file_name)
+    )
 
 
-    unblock(
+    settings_checker(
         args, 
         optim_config, 
         net_config, 
+        scheduler_config,
         training_config
     )
 
