@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 import torch.nn as nn
+from torch.optim.lr_scheduler import StepLR
 
 
 from NNFactory import Nature2016Factory
@@ -55,6 +56,8 @@ if __name__ == '__main__':
 
     net = Nature2016Factory().createModel()
     optim = SGDFactory().create_optim(net, optim_config)
+    scheduler = StepLR(optim, step_size=scheduler_config['step_size'], gamma=scheduler_config['gamma'])
+
     loss_func = nn.CrossEntropyLoss()
 
 
@@ -63,6 +66,7 @@ if __name__ == '__main__':
         optim, 
         loss_func, 
         os.path.join(args.save_path, args.file_name),
+        scheduler,
     )
 
 

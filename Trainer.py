@@ -11,13 +11,14 @@ set_seed()
 
 
 class Trainer:
-    def __init__(self, net, optim, loss_func, file_path):
+    def __init__(self, net, optim, loss_func, file_path, lr_scheduler=None):
         '''
             Args:
                 net (nn.Module): the neural network to be trained
-                optim (nn.Module): optimizer
+                optim (torch.optim.Optimizer): optimizer
                 loss_func (nn.Module): loss function
                 file_path (str): the path to save the model
+                lr_schedulr (torch.optim.lr_scheduler): learning rate scheduler
         '''
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         print(f'Training on {self.device}')
@@ -28,6 +29,7 @@ class Trainer:
         self.optim = optim
         self.loss_func = loss_func
         self.file_path = file_path
+        self.lr_scheduler = lr_scheduler
 
 
     def fit(self, train_set, test_set, log_file, lastest_path):
@@ -86,6 +88,8 @@ class Trainer:
             }, lastest_path)
 
 
+            if self.lr_scheduler is not None:
+                self.lr_scheduler.step()
 
         self.plot(top_1_train_accs, top_5_train_accs, top_1_test_accs, top_5_test_accs)
 
