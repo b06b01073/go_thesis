@@ -55,10 +55,9 @@ def next_state(state, action1d, canonical=False):
         # We passed
         state[govars.PASS_CHNL] = 1
 
-        # disable the game ended here
-        # if previously_passed:
-        #     # Game ended
-        #     state[govars.DONE_CHNL] = 1
+        if previously_passed:
+            # Game ended
+            state[govars.DONE_CHNL] = 1
     else:
         # Move was not pass
         state[govars.PASS_CHNL] = 0

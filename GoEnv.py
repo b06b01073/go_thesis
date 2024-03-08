@@ -27,6 +27,10 @@ class Go:
         self.last_move = None
     
 
+    def is_ended(self):
+        return np.max(self.game_state[govars.DONE_CHNL]) == 1
+
+
     def build_recent_moves(self, action1d):
         last_move = np.zeros((govars.SIZE, govars.SIZE))
         if action1d != govars.PASS:
@@ -140,6 +144,13 @@ class Go:
 
         return np.copy(game_feature).astype(np.float32)
     
+
+    def is_valid(self, action1d):
+        row, col = goutils.action1d_to_action2d(action1d)
+        if self.game_state[govars.INVD_CHNL, row, col]:
+            return False
+    
+        return True
 
 
     def get_state(self):
