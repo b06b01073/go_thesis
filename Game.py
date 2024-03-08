@@ -63,10 +63,10 @@ class Game:
         '''
         while not self.go_env.is_ended():
             if self.cur_player == self.human_player:
-                # os.system('clear') # use cls on Windows
+                os.system('clear') # use 'os.system('cls') on Windows
                 self.go_env.render()
                 print('All the moves are represented in [Col Row] format.')
-                print(f'Your last move is {self.human_last_move} , opponent\'s last move is {self.nn_last_move}')
+                print(f'Your last move is {self.human_last_move}, opponent\'s last move is {self.nn_last_move}')
 
                 move = self.human_move()
                 self.human_last_move = goutils.readable_action1d(move)
