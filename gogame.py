@@ -476,7 +476,13 @@ def str(state):
                         board_str += '╢'
                     else:
                         board_str += '┼─'
+        board_str += '{}\t'.format(chr(i + 97))
         board_str += '\n'
+
+    board_str += '\t'
+    for i in range(size):
+        board_str += '{}'.format(chr(i + 97)).ljust(2, ' ')
+    board_str += '\n'
 
     black_area, white_area = areas(state)
     t = turn(state)
